@@ -7,7 +7,7 @@
 #define VREF 5.0
 #define temperature 25.0
 #define tdsPin A1
-#define target_ppm 200.0
+#define target_ppm 45.0
 
 // Servo Parameter
 #define p_valve1 PA_7
@@ -16,9 +16,9 @@
 #define p_liftingArm PB_4
 
 // Controller Paramter
-#define kp 1.0
-#define ki 1.0
-#define kd 1.0
+#define kp 0.3
+#define ki 0.005
+#define kd 0.2
 
 
 // Button Control
@@ -57,13 +57,14 @@ int main()
     thread.start(callback(tds, &TDS::listening_to_data));
 
     // Servo
-    Servo* s_valve1 = new Servo(p_valve1);
-    Servo* s_valve2 = new Servo(p_valve2);
+    Servo* s_valve1 = new Servo(p_valve1); // clean water
+    Servo* s_valve2 = new Servo(p_valve2); // dirty waer
     Servo* s_stirring = new Servo(p_stirringRod);
     Servo* s_lifting = new Servo(p_liftingArm);
 
     // PID, specify target, kp, ki, kd
     PID_controller* pid_control = new PID_controller(target_ppm, kp, ki, kd);
+    float output_control = 0;
 
     // Button Control
     button.fall(&button_pressed);
@@ -85,8 +86,6 @@ int main()
             readyToRun = 0;
         }
 
-
-
         else if (button_state == 1){
             state0 = 0;
             state1 = 1;
@@ -101,19 +100,19 @@ int main()
                 readyToRun = 1;
             }
             lock = 0;
-            float output_control = pid_control->output_control(tds->getFilteredValue());
+            output_control = pid_control->output_control(tds->getFilteredValue());
             if (output_control >= 0){
                 // Need to be denser (target is more than measurement)
-                s_valve1->writeAngle(output_control);
-                s_valve2->openClaw(); // closed
+                s_valve2->writeAngle(output_control);
+                s_valve1->openClaw(); // closed
             }
             else{
                 // Need more clean water (target is less than measurement)
-                s_valve1->openClaw(); // closed
-                s_valve2->writeAngle(output_control);
+                s_valve2->openClaw(); // closed
+                s_valve1->writeAngle(-output_control);
             }
         }
-        printf("%3.0f\t%3.0f\t%3.0f\t%d\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state);
+        printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control);
         ThisThread::sleep_for(30ms);   
     }
 }

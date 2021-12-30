@@ -27,7 +27,7 @@ void Servo::writeSpeed(float speed){
 }
 
 void Servo::openClaw(){
-    writeAngle(0.1);
+    writeAngle(0.12);
 }
 
 void Servo::stir(){

@@ -2,13 +2,13 @@
    clc
 
    %User Defined Properties 
-   serialPort = 'COM8';            % define COM port #
+   serialPort = 'COM7';            % define COM port #
    plotTitle = 'TDS Value';  % plot title
    xLabel = 'Elapsed Time (s)';    % x-axis label
    yLabel = 'Data';                % y-axis label
    plotGrid = 'on';                % 'off' to turn off grid
    min = 0;                     % set y-min
-   max = 300;                      % set y-max
+   max = 100;                      % set y-max
    scrollWidth = 10;               % display period in plot, plot entire data log if <= 0
    delay = .01;                    % make sure sample faster than resolution
 
@@ -47,13 +47,11 @@
 %    legend()
    axis([0 10 min max]);
    grid(plotGrid);
-
    %Open Serial COM Port
    fclose(instrfind()) 
    s = serial(serialPort)
    disp('Close Plot to End Session');
    fopen(s);
-
    tic 
 
    while ( ishandle(plotGraphx)  ) %Loop when Plot is Active && ishandle(plotGraphy) && ishandle(plotGraphz)
@@ -87,6 +85,12 @@
                set(plotGraph_target,'XData',time,'YData',data_target);
                set(plotGraph_filtered,'XData',time,'YData',data_filtered);
                axis([0 time(count) min max]);
+           end
+           
+           if size(dat,1) >= 2
+               title(sprintf("TDS Value = %d ppm",dat(2)));
+           else
+               title(sprintf("TDS Value"));
            end
 
            %Allow MATLAB to Update Plot
