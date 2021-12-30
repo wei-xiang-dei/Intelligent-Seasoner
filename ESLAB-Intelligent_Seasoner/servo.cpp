@@ -9,11 +9,39 @@ Servo::~Servo(){
 }
 
 void Servo::writeAngle(float angle){
-    servo->period(2.0f);
-    servo->write(angle/180);
+    if (angle != prevValue){
+        // has not set before. 
+        servo->period(0.02);
+        servo->write(angle);
+    }
+    prevValue = angle;
 }
 
 void Servo::writeSpeed(float speed){
-    servo->period(2.0f);
-    servo->write(speed/180);
+    if (speed != prevValue){
+        // has not set before. 
+        servo->period(0.02);
+        servo->write(speed);
+    }
+    prevValue = speed;
+}
+
+void Servo::openClaw(){
+    writeAngle(0.1);
+}
+
+void Servo::stir(){
+    writeSpeed(0.1);
+}
+
+void Servo::stopStir(){
+    writeSpeed(0);
+}
+
+void Servo:: lift(){
+    writeAngle(0.12);
+}
+
+void Servo::decline(){
+    writeAngle(0.075);
 }

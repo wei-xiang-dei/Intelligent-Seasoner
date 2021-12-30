@@ -24,6 +24,9 @@
 // Button Control
 InterruptIn button(BUTTON1);
 volatile bool button_state = 0;
+DigitalOut state0(LED1);
+DigitalOut state1(LED3);
+volatile bool lock = 0;
 
 /////////////////////////////////////////////// Serial Monitor ///////////////////////////////////////////////
 // Specify different pins to test printing on UART other than the console UART.
@@ -39,7 +42,10 @@ FileHandle *mbed::mbed_override_console(int fd)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void button_pressed(){
-    button_state = !button_state;
+    if (lock == 0){
+        //if not sleeping, we can update
+        button_state = !button_state;
+    }
 }
 
 int main()
@@ -63,43 +69,51 @@ int main()
     button.fall(&button_pressed);
     bool readyToRun = 0;
 
-
     while (true) {
         // printf("sensor %f\t filtered %f\n", tds->getSensorValue(), tds->getFilteredValue());
         
         if (button_state == 0){
+            state0 = 1;
+            state1 = 0;
         ////////////////////////////// State 0: Ready State /////////////////////////////////
-            s_valve1->writeAngle(0); //closed
-            s_valve2->writeAngle(0); // closed
-            s_stirring->writeSpeed(0); // Stop stirring
-            s_lifting->writeAngle(180); // Lifting
+            s_valve1->openClaw(); //closed
+            s_valve2->openClaw(); // closed
+
+            // Hard-Code
+            s_stirring->stopStir(); // Stop stirring
+            s_lifting->lift(); // Lifting
             readyToRun = 0;
         }
 
 
 
         else if (button_state == 1){
+            state0 = 0;
+            state1 = 1;
         ////////////////////////////// State 1: Running State /////////////////////////////////
+            lock = 1;
             if (readyToRun == 0){
-                s_lifting->writeAngle(0); // Declining
+                // Hard-Code
+                s_lifting->decline(); // Declining
                 ThisThread::sleep_for(2s);   
-                s_stirring->writeSpeed(0); // Start stirring
+                s_stirring->stir(); // Start stirring
                 ThisThread::sleep_for(2s);  
                 readyToRun = 1;
             }
+            lock = 0;
             float output_control = pid_control->output_control(tds->getFilteredValue());
             if (output_control >= 0){
                 // Need to be denser (target is more than measurement)
                 s_valve1->writeAngle(output_control);
-                s_valve2->writeAngle(0); // closed
+                s_valve2->openClaw(); // closed
             }
             else{
                 // Need more clean water (target is less than measurement)
-                s_valve1->writeAngle(0); // closed
+                s_valve1->openClaw(); // closed
                 s_valve2->writeAngle(output_control);
             }
         }
-        printf("%3.0f\t%3.0f\t%3.0f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm);
+        printf("%3.0f\t%3.0f\t%3.0f\t%d\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state);
         ThisThread::sleep_for(30ms);   
     }
 }
