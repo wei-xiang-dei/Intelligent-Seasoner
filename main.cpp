@@ -24,8 +24,8 @@
 // Button Control
 InterruptIn button(BUTTON1);
 volatile bool button_state = 0;
-DigitalOut state0(LED1);
-DigitalOut state1(LED3);
+DigitalOut stateLED0(LED1);
+DigitalOut stateLED1(LED3);
 volatile bool lock = 0;
 
 /////////////////////////////////////////////// Serial Monitor ///////////////////////////////////////////////
@@ -74,8 +74,8 @@ int main()
         // printf("sensor %f\t filtered %f\n", tds->getSensorValue(), tds->getFilteredValue());
         
         if (button_state == 0){
-            state0 = 1;
-            state1 = 0;
+            stateLED0 = 1;
+            stateLED1 = 0;
         ////////////////////////////// State 0: Ready State /////////////////////////////////
             s_valve1->openClaw(); //closed
             s_valve2->openClaw(); // closed
@@ -87,8 +87,8 @@ int main()
         }
 
         else if (button_state == 1){
-            state0 = 0;
-            state1 = 1;
+            stateLED0 = 0;
+            stateLED1 = 1;
         ////////////////////////////// State 1: Running State /////////////////////////////////
             lock = 1;
             if (readyToRun == 0){
