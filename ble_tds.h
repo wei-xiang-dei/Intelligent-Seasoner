@@ -20,7 +20,7 @@ static EventQueue event_queue(/* event count */ 10 * EVENTS_EVENT_SIZE);
 class tdsdemo: ble::Gap::EventHandler {
 
 public:
-    tdsdemo(BLE &ble, events::EventQueue &event_queue, volatile float& target_ppm, volatile float& kp, volatile float& ki, volatile float& kd, volatile bool& butt) :
+    tdsdemo(BLE &ble, events::EventQueue &event_queue, volatile float& target_ppm, volatile float& kp, volatile float& ki, volatile float& kd, volatile bool& butt, volatile bool& lock) :
         _ble(ble),
         _event_queue(event_queue),
         _tdspservice(NULL),
@@ -30,7 +30,8 @@ public:
         kp(kp),
         ki(ki),
         kd(kd),
-        butt(butt)
+        butt(butt),
+        lock(lock)
         {};
     volatile uint64_t target_ppm_int;
     volatile float&  target_ppm;
@@ -38,6 +39,7 @@ public:
     volatile float&  ki;
     volatile float&  kd;
     volatile bool&  butt;
+    volatile bool& lock;
 
 
 
@@ -138,10 +140,10 @@ private:
             kd = *(params->data);
             printf("kd is %f",kd);
         }else if ((params->handle == _tdspservice->getValueHandle4())){
-            
-            std::cout << params->data<< std::endl;
-            butt = *(params->data);
-            printf("butt is %d",butt);
+            if (lock == 0){
+                //if not sleeping, we can update
+                butt = !butt;
+            }
 
         }
     }
@@ -166,9 +168,6 @@ private:
     
 };
 
-void schedule_ble_events(BLE::OnEventsToProcessCallbackContext *context) {
-    event_queue.call(Callback<void()>(&context->ble, &BLE::processEvents));
-}
 
 
 

@@ -54,10 +54,13 @@ void button_pressed(){
     }
 }
 
+void schedule_ble_events(BLE::OnEventsToProcessCallbackContext *context) {
+    event_queue.call(Callback<void()>(&context->ble, &BLE::processEvents));
+}
 void ble_trun(){
     BLE &ble = BLE::Instance();
     ble.onEventsToProcess(schedule_ble_events);
-    tdsdemo demo(ble, event_queue, target_ppm, kp, ki, kd, button_state);
+    tdsdemo demo(ble, event_queue, target_ppm, kp, ki, kd, button_state, lock);
     demo.start();   
 }
 int main()
