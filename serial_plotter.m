@@ -8,7 +8,7 @@
    yLabel = 'Data';                % y-axis label
    plotGrid = 'on';                % 'off' to turn off grid
    min = 0;                     % set y-min
-   max = 100;                      % set y-max
+   max = 200;                      % set y-max
    scrollWidth = 10;               % display period in plot, plot entire data log if <= 0
    delay = .01;                    % make sure sample faster than resolution
 

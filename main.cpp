@@ -24,9 +24,9 @@
 // #define ki 0.005
 // #define kd 0.2
 volatile float target_ppm=60; 
-volatile float kp=0.3;
-volatile float ki=0.005;
-volatile float kd=0.2;
+volatile float kp=0.4;
+volatile float ki=0.01;
+volatile float kd=0.0;
 volatile bool button_state = 0;
 
 InterruptIn button(BUTTON1);
@@ -90,7 +90,6 @@ int main()
 
     while (true) {
         // printf("sensor %f\t filtered %f\n", tds->getSensorValue(), tds->getFilteredValue());
-
         if (button_state == 0){
             stateLED0 = 1;
             stateLED1 = 0;
@@ -107,6 +106,7 @@ int main()
         else if (button_state == 1){
             stateLED0 = 0;
             stateLED1 = 1;
+            
         ////////////////////////////// State 1: Running State /////////////////////////////////
             lock = 1;
             if (readyToRun == 0){
@@ -118,6 +118,9 @@ int main()
                 readyToRun = 1;
             }
             lock = 0;
+            // s_valve1->writeAngle(0.09);
+            // s_valve2->writeAngle(0.09);
+            // continue;
             output_control = pid_control->output_control(tds->getFilteredValue());
             if (output_control >= 0){
                 // Need to be denser (target is more than measurement)
@@ -130,7 +133,7 @@ int main()
                 s_valve1->writeAngle(-output_control);
             }
         }
-        // printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control);
+        printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\t%3.5f\t%3.5f\t%3.5f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control, kp, ki, kd);
         ThisThread::sleep_for(30ms);   
     }
 }

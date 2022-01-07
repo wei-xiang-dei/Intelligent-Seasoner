@@ -24,7 +24,7 @@ float PID_controller::output_control(float measurement){
     float output;
     float low_thr = 0;
     float high_thr = 50;
-    float fullWater = 0.07;
+    float fullWater = 0.09;
     float noWater = 0.12;
     if (abs(total) < low_thr){
         output = noWater;

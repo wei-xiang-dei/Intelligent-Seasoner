@@ -33,7 +33,6 @@ public:
         butt(butt),
         lock(lock)
         {};
-    volatile uint64_t target_ppm_int;
     volatile float&  target_ppm;
     volatile float&  kp;
     volatile float&  ki;
@@ -116,29 +115,25 @@ private:
 
      void on_data_written(const GattWriteCallbackParams *params) {
         if ((params->handle == _tdspservice->getValueHandle()) ){
-            std::cout << params->data << std::endl;
-            target_ppm_int = *(params->data);
-            target_ppm = float(target_ppm_int);
-            printf("target_ppm is %f",target_ppm);
+            // data: 60, ppm: 60
+            target_ppm = float(*(params->data));
+            printf("target_ppm is %3.3f\n",target_ppm);
 
         }else if ((params->handle == _tdspservice->getValueHandle1())) {
-            
-            std::cout << params->data<< std::endl;
-            kp = *(params->data);
-            printf("kp is %f",kp);
+            // data: 30, kp = data/100 = 0.3
+            kp = (float(*(params->data)))/100;
+            printf("kp is %3.3f\n",kp);
 
         }else if ((params->handle == _tdspservice->getValueHandle2())) {
-            
-            std::cout << params->data<< std::endl;
-            ki = *(params->data);
-            printf("ki is %f",ki);
+            // data: 50, ki = data/10000 = 0.005
+            ki = (float(*(params->data)))/10000;
+            printf("ki is %3.3f\n",ki);
         
         }else if ((params->handle == _tdspservice->getValueHandle3())) {
-            
-            std::cout << params->data<< std::endl;
-        // statements
-            kd = *(params->data);
-            printf("kd is %f",kd);
+            // data: 20, ppm = data/100 = 0.2
+            kd = (float(*(params->data)))/100;
+            printf("kd is %3.3f\n",kd);
+
         }else if ((params->handle == _tdspservice->getValueHandle4())){
             if (lock == 0){
                 //if not sleeping, we can update
