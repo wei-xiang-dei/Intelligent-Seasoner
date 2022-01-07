@@ -1,13 +1,17 @@
 #include "mbed.h"
+#include "ble/BLE.h"
+#include "ble/Gap.h"
+
 #include "./TDS_Meter.h"
 #include "./servo.h"
 #include "./PID_controller.h"
+#include "./ble_tds.h"
 
 // TDS Parameter
 #define VREF 5.0
 #define temperature 25.0
 #define tdsPin A1
-#define target_ppm 45.0
+// #define target_ppm 45.0
 
 // Servo Parameter
 #define p_valve1 PA_7
@@ -16,14 +20,16 @@
 #define p_liftingArm PB_4
 
 // Controller Paramter
-#define kp 0.3
-#define ki 0.005
-#define kd 0.2
-
-
-// Button Control
-InterruptIn button(BUTTON1);
+// #define kp 0.3
+// #define ki 0.005
+// #define kd 0.2
+volatile float target_ppm=60; 
+volatile float kp=0.3;
+volatile float ki=0.005;
+volatile float kd=0.2;
 volatile bool button_state = 0;
+
+InterruptIn button(BUTTON1);
 DigitalOut stateLED0(LED1);
 DigitalOut stateLED1(LED3);
 volatile bool lock = 0;
@@ -48,13 +54,22 @@ void button_pressed(){
     }
 }
 
+void ble_trun(){
+    BLE &ble = BLE::Instance();
+    ble.onEventsToProcess(schedule_ble_events);
+    tdsdemo demo(ble, event_queue, target_ppm, kp, ki, kd, button_state);
+    demo.start();   
+}
 int main()
 {
+    Thread  ble_t;
+    ble_t.start(callback(ble_trun));
+    
     // Start a thread to concurrently fetching and filtering the data.
     // Then in the main function, call getSensorValue and getFilteredValue to fetch the current state.
-    Thread thread;
+    Thread thread_tds;
     volatile TDS* tds = new TDS(tdsPin, VREF, temperature);
-    thread.start(callback(tds, &TDS::listening_to_data));
+    thread_tds.start(callback(tds, &TDS::listening_to_data));
 
     // Servo
     Servo* s_valve1 = new Servo(p_valve1); // clean water
@@ -72,7 +87,7 @@ int main()
 
     while (true) {
         // printf("sensor %f\t filtered %f\n", tds->getSensorValue(), tds->getFilteredValue());
-        
+
         if (button_state == 0){
             stateLED0 = 1;
             stateLED1 = 0;
@@ -112,7 +127,7 @@ int main()
                 s_valve1->writeAngle(-output_control);
             }
         }
-        printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control);
+        // printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control);
         ThisThread::sleep_for(30ms);   
     }
 }
