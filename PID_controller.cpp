@@ -1,6 +1,6 @@
 #include "./PID_controller.h"
 
-PID_controller::PID_controller(float target_value, float kp, float ki, float kd)
+PID_controller::PID_controller(volatile float& target_value, volatile float& kp, volatile float& ki, volatile float& kd)
 :
 target(target_value),
 kp(kp),
