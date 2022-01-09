@@ -118,9 +118,11 @@ int main()
                 readyToRun = 1;
             }
             lock = 0;
+            ///////////////// Servo Test //////////////////////////
             // s_valve1->writeAngle(0.09);
             // s_valve2->writeAngle(0.09);
             // continue;
+            //////////////////////////////////////////////////////
             output_control = pid_control->output_control(tds->getFilteredValue());
             if (output_control >= 0){
                 // Need to be denser (target is more than measurement)
@@ -133,7 +135,26 @@ int main()
                 s_valve1->writeAngle(-output_control);
             }
         }
-        printf("%3.3f\t%3.3f\t%3.3f\t%d\t%3.3f\t%3.5f\t%3.5f\t%3.5f\n", tds->getSensorValue(), tds->getFilteredValue(), target_ppm, button_state, output_control, kp, ki, kd);
+
+        // for print purpose
+        float p_control = pid_control->now_error * pid_control->kp;
+        float i_control = pid_control->sum_error * pid_control->ki;
+        float d_control = (pid_control->now_error - pid_control->prev_error) * pid_control->kd;
+        float total_control = p_control + i_control + d_control;
+        printf("%3.5f\t%3.5f\t%3.5f\t%d\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\n", 
+            tds->getSensorValue(), 
+            tds->getFilteredValue(), 
+            target_ppm, 
+            button_state, 
+            kp, 
+            ki,
+            kd,
+            p_control,
+            i_control,
+            d_control,
+            total_control,
+            output_control
+        );
         ThisThread::sleep_for(30ms);   
     }
 }
