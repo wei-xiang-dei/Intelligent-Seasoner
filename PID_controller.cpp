@@ -33,8 +33,9 @@ float PID_controller::output_control(float measurement){
         output = fullWater;
     }
     else{
-        output = abs(total) * (-fullWater/(high_thr-low_thr)) + (noWater - fullWater * low_thr / (high_thr-low_thr));
-    }
+        float a = (fullWater-noWater)/(high_thr-low_thr);
+        float b = noWater - a * low_thr;
+        output = abs(total) * a + b;
     if (total >= 0){
         return output;
     }
