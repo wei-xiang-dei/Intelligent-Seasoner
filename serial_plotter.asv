@@ -57,9 +57,9 @@
    while ( ishandle(plotGraphx)  ) %Loop when Plot is Active && ishandle(plotGraphy) && ishandle(plotGraphz)
 
        dat = fscanf(s,'%f %f %f'); %Read Data from Serial as Float: PLEASE NOTE: Here i modified the code, in order to adjust the correct format of data in input.
-       if(size(dat, 1)>=12)
-        fprintf('\np_error: %3.5f\ni_error: %3.5f\ntotal: %3.5f\noutput: %3.5f\n',dat(8), dat(9), dat(11), dat(12));
-       end
+       if(dat)
+       fprintf('p_error: %3.5f\ni_error: %3.5f\ntotal: %3.5f\noutput: %3.5f',dat(8), dat(9), dat(11), dat(12));
+
        if(~isempty(dat) && isfloat(dat)) %Make sure Data Type is Correct        
            count = count + 1;    
            time(count) = toc;    %Extract Elapsed Time

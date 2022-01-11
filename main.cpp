@@ -23,9 +23,9 @@
 // #define kp 0.3
 // #define ki 0.005
 // #define kd 0.2
-volatile float target_ppm = 10;
-volatile float kp = 1.2; // 0.7
-volatile float ki = 0.02; // 0.01
+volatile float target_ppm = 80;
+volatile float kp = 0.7; // 0.7
+volatile float ki = 0.001; // 0.01
 volatile float kd = 0.0;
 volatile bool button_state = 0;
 
@@ -127,6 +127,7 @@ int main()
             pid_control->sum_error = 0;
             pid_control->prev_error = 0;
             pid_control->now_error = 0;
+            output_control = 0;
         }
 
         else if (button_state == 1)
@@ -180,6 +181,7 @@ int main()
         float i_control = pid_control->i_control;
         float d_control = pid_control->d_control;
         float total_control = p_control + i_control + d_control;
+        // printf("%3.5f\t%3.5f\t%3.5f\t%3.5f%3.5f\n", pid_control->sum_error, pid_control->ki, i_control, pid_control->kp, pid_control->kd);
         printf("%3.5f\t%3.5f\t%3.5f\t%d\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\n",
                tds->getSensorValue(),
                tds->getFilteredValue(),
