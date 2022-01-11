@@ -25,7 +25,7 @@
 // #define kd 0.2
 volatile float target_ppm = 80;
 volatile float kp = 0.7; // 0.7
-volatile float ki = 0.001; // 0.01
+volatile float ki = 0.0025; // or 0.001
 volatile float kd = 0.0;
 volatile bool button_state = 0;
 
