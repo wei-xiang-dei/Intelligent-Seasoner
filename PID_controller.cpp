@@ -13,10 +13,10 @@ prev_error(0)
 
 float PID_controller::output_control(float measurement){
     now_error = target - measurement;
-    float p_control = now_error * kp;
+    p_control = now_error * kp;
     sum_error += now_error;
-    float i_control = sum_error * ki;
-    float d_control = (now_error - prev_error) * kd;
+    i_control = sum_error * ki;
+    d_control = (now_error - prev_error) * kd;
     prev_error = now_error;
     // printf("p_control %f\t i_controld %f\t d_control %f \n", p_control, i_control, d_control);
     float total = p_control + i_control + d_control;
@@ -24,8 +24,8 @@ float PID_controller::output_control(float measurement){
     float output;
     float low_thr = 0;
     float high_thr = 50;
-    float fullWater = 0.09;
-    float noWater = 0.12;
+    float fullWater = 0.09; //0.09
+    float noWater = 0.105; //0.12
     if (abs(total) < low_thr){
         output = noWater;
     }

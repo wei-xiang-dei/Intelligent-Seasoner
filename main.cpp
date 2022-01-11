@@ -23,9 +23,9 @@
 // #define kp 0.3
 // #define ki 0.005
 // #define kd 0.2
-volatile float target_ppm = 60;
-volatile float kp = 0.4;
-volatile float ki = 0.01;
+volatile float target_ppm = 10;
+volatile float kp = 1.2; // 0.7
+volatile float ki = 0.02; // 0.01
 volatile float kd = 0.0;
 volatile bool button_state = 0;
 
@@ -33,6 +33,7 @@ InterruptIn button(BUTTON1);
 DigitalOut stateLED0(LED1);
 DigitalOut stateLED1(LED3);
 volatile bool lock = 0;
+volatile bool middleMoved = false;
 
 /////////////////////////////////////////////// Serial Monitor ///////////////////////////////////////////////
 // Specify different pins to test printing on UART other than the console UART.
@@ -53,6 +54,7 @@ void button_pressed()
     {
         //if not sleeping, we can update
         button_state = !button_state;
+        middleMoved = !middleMoved;
     }
 }
 
@@ -64,9 +66,10 @@ void ble_trun()
 {
     BLE &ble = BLE::Instance();
     ble.onEventsToProcess(schedule_ble_events);
-    tdsdemo demo(ble, event_queue, target_ppm, kp, ki, kd, button_state, lock);
+    tdsdemo demo(ble, event_queue, target_ppm, kp, ki, kd, button_state, lock, middleMoved);
     demo.start();
 }
+
 int main()
 {
     Thread ble_t;
@@ -102,9 +105,22 @@ int main()
             ////////////////////////////// State 0: Ready State /////////////////////////////////
             s_valve1->openClaw(); //closed
             s_valve2->openClaw(); // closed
-
-            // Hard-Code
+            
             s_stirring->stopStir(); // Stop stirring
+            // Hard-Code
+            if (!middleMoved){
+                for(float i= 0.09; i < 0.12; i += 0.001){
+                    s_lifting->writeAngle(i);
+                    ThisThread::sleep_for(50ms);
+                }
+                // s_lifting->writeAngle(0.09);
+                // ThisThread::sleep_for(200ms);
+                // s_lifting->writeAngle(0.1);
+                // ThisThread::sleep_for(200ms);
+                // s_lifting->writeAngle(0.11);
+                // ThisThread::sleep_for(200ms);
+                middleMoved = true;
+            }
             s_lifting->lift();      // Lifting
             readyToRun = 0;
 
@@ -123,6 +139,15 @@ int main()
             if (readyToRun == 0)
             {
                 // Hard-Code
+                if (!middleMoved){
+                    s_lifting->writeAngle(0.1);
+                    ThisThread::sleep_for(100ms);
+                    s_lifting->writeAngle(0.1);
+                    ThisThread::sleep_for(100ms);
+                    s_lifting->writeAngle(0.09);
+                    ThisThread::sleep_for(100ms);
+                    middleMoved = true;
+                }
                 s_lifting->decline(); // Declining
                 ThisThread::sleep_for(2s);
                 s_stirring->stir(); // Start stirring
@@ -141,23 +166,19 @@ int main()
                 // Need to be denser (target is more than measurement)
                 s_valve2->writeAngle(output_control);
                 s_valve1->openClaw(); // closed
-
-                // s_valve1->writeAngle(output_control);
             }
             else
             {
                 // Need more clean water (target is less than measurement)
                 s_valve2->openClaw(); // closed
                 s_valve1->writeAngle(-output_control);
-
-                // s_valve2->writeAngle(-output_control);
             }
         }
 
         // for print purpose
-        float p_control = pid_control->now_error * pid_control->kp;
-        float i_control = pid_control->sum_error * pid_control->ki;
-        float d_control = (pid_control->now_error - pid_control->prev_error) * pid_control->kd;
+        float p_control = pid_control->p_control;
+        float i_control = pid_control->i_control;
+        float d_control = pid_control->d_control;
         float total_control = p_control + i_control + d_control;
         printf("%3.5f\t%3.5f\t%3.5f\t%d\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\t%3.5f\n",
                tds->getSensorValue(),

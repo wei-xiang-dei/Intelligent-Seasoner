@@ -20,7 +20,7 @@ static EventQueue event_queue(/* event count */ 10 * EVENTS_EVENT_SIZE);
 class tdsdemo: ble::Gap::EventHandler {
 
 public:
-    tdsdemo(BLE &ble, events::EventQueue &event_queue, volatile float& target_ppm, volatile float& kp, volatile float& ki, volatile float& kd, volatile bool& butt, volatile bool& lock) :
+    tdsdemo(BLE &ble, events::EventQueue &event_queue, volatile float& target_ppm, volatile float& kp, volatile float& ki, volatile float& kd, volatile bool& butt, volatile bool& lock, volatile bool& middleMoved) :
         _ble(ble),
         _event_queue(event_queue),
         _tdspservice(NULL),
@@ -31,7 +31,8 @@ public:
         ki(ki),
         kd(kd),
         butt(butt),
-        lock(lock)
+        lock(lock),
+        middleMoved(middleMoved)
         {};
     volatile float&  target_ppm;
     volatile float&  kp;
@@ -39,6 +40,7 @@ public:
     volatile float&  kd;
     volatile bool&  butt;
     volatile bool& lock;
+    volatile bool& middleMoved;
 
 
 
@@ -138,6 +140,7 @@ private:
             if (lock == 0){
                 //if not sleeping, we can update
                 butt = !butt;
+                middleMoved = !middleMoved;
             }
 
         }

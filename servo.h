@@ -14,6 +14,7 @@ class Servo{
         void stopStir();
         void lift();
         void decline();
+        void middleMove();
     private:
         PwmOut* servo;
         bool prevValue;

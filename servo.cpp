@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "./servo.h"
+#include "mbed.h"
 
 Servo::Servo(PinName pin){
     servo = new PwmOut(pin);
@@ -40,6 +41,9 @@ void Servo::stopStir(){
 
 void Servo:: lift(){
     writeAngle(0.12);
+}
+
+void Servo::middleMove(){
 }
 
 void Servo::decline(){

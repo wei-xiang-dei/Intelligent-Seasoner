@@ -10,4 +10,7 @@ class PID_controller {
         float now_error;
         float prev_error;
         float sum_error;
+        float p_control;
+        float i_control;
+        float d_control;
 };
