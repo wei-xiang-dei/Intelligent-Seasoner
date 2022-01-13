@@ -5,10 +5,10 @@
 #define _TDSP_SERVICE_H__
 
 const static uint16_t DIGITAL_USERDESCRIPTION_UUID  = 0x2901;
-uint8_t kpname[] = "kp value";
-uint8_t kiname[] = "ki value";
-uint8_t kdname[] = "kd value";
-uint8_t target_ppm_name[] = "target ppm value";
+uint8_t kpname[] = "kp Value";
+uint8_t kiname[] = "ki Value";
+uint8_t kdname[] = "kd Value";
+uint8_t target_ppm_name[] = "Target ppm Value";
 uint8_t the_BUTTONSTATE[] = "Button State";
 
 class TdspService{

@@ -48,11 +48,11 @@
    axis([0 10 min max]);
    grid(plotGrid);
    %Open Serial COM Port
-   fclose(instrfind()) 
-   s = serial(serialPort)
+   fclose(instrfind()) ;
+   s = serial(serialPort);
    disp('Close Plot to End Session');
    fopen(s);
-   tic 
+   tic ;
 
    while ( ishandle(plotGraphx)  ) %Loop when Plot is Active && ishandle(plotGraphy) && ishandle(plotGraphz)
 
@@ -90,7 +90,7 @@
            end
            
            if size(dat,1) >= 2
-               title(sprintf("TDS Value = %d ppm",dat(2)));
+               title(sprintf("TDS Value = %3.2f ppm",dat(2)));
            else
                title(sprintf("TDS Value"));
            end

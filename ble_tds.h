@@ -11,7 +11,7 @@
 
 
 
-const static char DEVICE_NAME[] = "intelligent seasoner";
+const static char DEVICE_NAME[] = "Intelligent Seasoner";
 static EventQueue event_queue(/* event count */ 10 * EVENTS_EVENT_SIZE);
 
 

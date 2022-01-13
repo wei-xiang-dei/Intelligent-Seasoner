@@ -25,7 +25,7 @@
 // #define kd 0.2
 volatile float target_ppm = 80;
 volatile float kp = 0.7; // 0.7
-volatile float ki = 0.0025; // or 0.001
+volatile float ki = 0.001; // or 0.025
 volatile float kd = 0.0;
 volatile bool button_state = 0;
 
@@ -72,6 +72,9 @@ void ble_trun()
 
 int main()
 {
+    set_time(1256729737);
+    time_t start_cnt = 0;
+
     Thread ble_t;
     ble_t.start(callback(ble_trun));
 
@@ -97,6 +100,7 @@ int main()
 
     while (true)
     {
+        time_t now_time = time(NULL);
         // printf("sensor %f\t filtered %f\n", tds->getSensorValue(), tds->getFilteredValue());
         if (button_state == 0)
         {
@@ -138,7 +142,7 @@ int main()
             ////////////////////////////// State 1: Running State /////////////////////////////////
             lock = 1;
             if (readyToRun == 0)
-            {
+            {   
                 // Hard-Code
                 if (!middleMoved){
                     s_lifting->writeAngle(0.1);
@@ -153,6 +157,7 @@ int main()
                 ThisThread::sleep_for(2s);
                 s_stirring->stir(); // Start stirring
                 ThisThread::sleep_for(2s);
+                start_cnt = now_time;
                 readyToRun = 1;
             }
             lock = 0;
@@ -173,6 +178,16 @@ int main()
                 // Need more clean water (target is less than measurement)
                 s_valve2->openClaw(); // closed
                 s_valve1->writeAngle(-output_control);
+            }
+
+
+            if (abs(tds->getFilteredValue()-target_ppm) < 5){
+                if ((now_time - start_cnt) > 10){
+                    button_pressed();
+                }
+            }
+            else{
+                start_cnt = now_time;
             }
         }
 
