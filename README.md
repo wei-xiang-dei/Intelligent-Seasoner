@@ -38,7 +38,10 @@
 - Parameters with fine-tuned values
 #### Structure
 <img src="https://user-images.githubusercontent.com/64905288/149810459-5d68d21d-87a1-406d-8fc8-2604f60defe7.png" width="500" />
+
+
 ## Technology Used
+
 ### Software
 - Real-time Feedback PID controll
 - BLE Programming
@@ -51,7 +54,7 @@
 - Real-time OSInterrupt
 - Programming I/O
 
-### mechanism
+### Mechanism
 
 - Mechatronics
 - faucet with Robotic Arm and Claw Controll
