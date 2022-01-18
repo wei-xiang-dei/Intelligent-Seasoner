@@ -30,7 +30,8 @@ We want some drinks with specific concentration.
 ### Full Mode
 #### Features
 - Connect to Phone via Bluetooth
-- Start/Stop by User Button on STM32 or Phone Tune Parameters by Phone
+- Start/Stop by User Button on STM32 or Phone
+- Tune Parameters by Phone
   - Customized Target TDS Value
   - Customized PID Control Parameters
 - Display instant TDS Value and Graph on the screen
@@ -40,7 +41,8 @@ We want some drinks with specific concentration.
 ### Works without Computer
 #### Features
 - Connect to Phone via Bluetooth
-- Start/Stop by User Button on STM32 or Phone Tune Parameters by Phone
+- Start/Stop by User Button on STM32 or Phone
+- Tune Parameters by Phone
   - Customized Target TDS Value
   - Customized PID Control Parameters
 #### Structure
