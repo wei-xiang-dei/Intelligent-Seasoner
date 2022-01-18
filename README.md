@@ -1,23 +1,29 @@
 # Intelligent Seasoner
 **A Device that Provides You with Desired Water.**
 
+![](https://i.imgur.com/e6Ae7AM.jpg)
+
 ## Demonstration
-Online Demo Video: https://www.youtube.com/watch?v=U9WBdGgQuSw
-
-看得到我更新嗎 by 立楷
-
-
+:star: Before getting started, watch our [demo video](https://www.youtube.com/watch?v=U9WBdGgQuSw) first!
 
 ## Motivation
 Given a drink, it’s hard to adjust the concentration manually.
 
-We want some drinks with specific concentration.
+With sensor, actuator, and computer, using the technique of `automatic control`, we're able to easily obtain any specific concentration of liquid that we want!
+
+![](https://i.imgur.com/qRdNfdU.png)
+
 
 ## Features
-- Internet of Things: Bluetooth Control.
-- Real-time precise and stable control.
-- No calculations need for customers.
-- Set up your favorite favor anytime.
+:heavy_check_mark: Internet of Things: Bluetooth Control.
+
+:heavy_check_mark: Real-time precise and stable control.
+
+:heavy_check_mark: No calculations need for customers.
+
+:heavy_check_mark: Set up your favorite favor anytime.
+
+![](https://i.imgur.com/NHQng2Q.jpg)
 
 ## Measurement Data of Water
 | | Temperature (°C) | TDS Value (ppm) |
@@ -71,7 +77,8 @@ We want some drinks with specific concentration.
 - PWM Servo control
 - TDS Meter
   - Analog to Digital Input
-- Real-time OS Interrupt
+- Real-time OS
+- Interrupt I/O
 - Programming I/O
 
 ### Mechanism
@@ -81,6 +88,14 @@ We want some drinks with specific concentration.
 
 ## Programming Model
 <img src="https://user-images.githubusercontent.com/55504676/149817489-e13ff637-07b9-4fe5-a04b-bf3467a3046f.png" width="800" />
+
+## Control Stategy
+To achieve stable and precise control, we use PID controller to compute the PWM duty cycle signal. And with some method of linearization, we can obtain a better result.
+
+![](https://i.imgur.com/kSnCfe5.png)
+![](https://i.imgur.com/Pep2g9a.png)
+
+
 
 ## Result
 <img src="https://user-images.githubusercontent.com/55504676/149818197-dec1b244-ca39-414c-82ab-b776a27041f8.png" width="500" />
